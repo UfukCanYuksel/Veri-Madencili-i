@@ -1,0 +1,25 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def kmeans(data, k, maxIterasyon=100):
+    samples, features = data.shape
+    koordinatlar = data[np.random.choice(samples, k, replace=False)]
+    for _ in range(maxIterasyon):
+        distances = np.linalg.norm(data[:, np.newaxis, :] - koordinatlar, axis=2)
+        labels = np.argmin(distances, axis=1)
+        yeniKoordinatlar = np.array([data[labels == j].mean(axis=0) for j in range(k)])
+        if np.all(koordinatlar == yeniKoordinatlar):
+            break
+        koordinatlar = yeniKoordinatlar
+    return koordinatlar, labels
+np.random.seed()
+data = np.concatenate([np.random.normal(loc=0, scale=1, size=(65, 2)),
+                       np.random.normal(loc=5, scale=1, size=(62, 2)),
+                       np.random.normal(loc=10, scale=1, size=(78, 2))])
+k = 3
+koordinatlar, labels = kmeans(data, k)
+plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis', s=50)
+plt.scatter(koordinatlar[:, 0], koordinatlar[:, 1], c='red', marker='X', s=200, label='koordinatlar')
+plt.title('K-means Clustering')
+plt.legend()
+plt.show()
